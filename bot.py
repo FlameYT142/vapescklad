@@ -34,15 +34,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not is_employee(user_id):
         await update.message.reply_text(
-            "🏪 *VAPECITY*\n"
+            "🏪 <b>VAPECITY</b>\n"
             "━━━━━━━━━━━━━━━━━━━\n\n"
-            "⛔ *Доступ ограничен*\n\n"
+            "⛔ <b>Доступ ограничен</b>\n\n"
             "Этот бот предназначен только для сотрудников склада.\n\n"
             "Если вы хотите приобрести товар — напишите нашему менеджеру:\n\n"
             f"👤 {MANAGER_USERNAME}\n\n"
             "━━━━━━━━━━━━━━━━━━━\n"
             "📞 Свяжитесь с менеджером для покупки",
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -62,13 +62,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     await update.message.reply_text(
-        f"🏪 *СКЛАД VAPECITY*\n"
+        f"🏪 <b>СКЛАД VAPECITY</b>\n"
         f"━━━━━━━━━━━━━━━━━━━\n\n"
         f"👤 {info['username']}\n"
-        f"{role_emoji} {role_name}\n\n"
+        f"{role_emoji} <b>{role_name}</b>\n\n"
         f"Выберите действие:",
         reply_markup=reply_markup,
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 
@@ -82,7 +82,7 @@ async def show_stock(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     report = get_report_stock()
-    await update.message.reply_text(report, parse_mode='Markdown')
+    await update.message.reply_text(report, parse_mode='HTML')
 
 
 # ============================================
@@ -107,11 +107,11 @@ async def add_product_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard.append([InlineKeyboardButton("❌ Отмена", callback_data="cancel")])
     
     await update.message.reply_text(
-        "➕ *ПРИНЯТЬ ТОВАР*\n"
+        "➕ <b>ПРИНЯТЬ ТОВАР</b>\n"
         "━━━━━━━━━━━━━━━━━━━\n\n"
         "Выберите товар из списка или создайте новый:",
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 
@@ -141,11 +141,11 @@ async def sell_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard.append([InlineKeyboardButton("❌ Отмена", callback_data="cancel")])
     
     await update.message.reply_text(
-        "➖ *ОФОРМИТЬ ПРОДАЖУ*\n"
+        "➖ <b>ОФОРМИТЬ ПРОДАЖУ</b>\n"
         "━━━━━━━━━━━━━━━━━━━\n\n"
         "Выберите товар:",
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 
@@ -166,11 +166,11 @@ async def show_reports(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     
     await update.message.reply_text(
-        "📊 *ОТЧЁТЫ*\n"
+        "📊 <b>ОТЧЁТЫ</b>\n"
         "━━━━━━━━━━━━━━━━━━━\n\n"
         "Выберите отчёт:",
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 
@@ -184,10 +184,10 @@ async def inventory_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     await update.message.reply_text(
-        "🔍 *ИНВЕНТАРИЗАЦИЯ*\n"
+        "🔍 <b>ИНВЕНТАРИЗАЦИЯ</b>\n"
         "━━━━━━━━━━━━━━━━━━━\n\n"
         "Введите название товара, который хотите пересчитать:",
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
     
     user_states[user_id] = {'state': 'inventory_wait_name'}
@@ -209,11 +209,11 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     
     await update.message.reply_text(
-        "⚙️ *АДМИН-ПАНЕЛЬ*\n"
+        "⚙️ <b>АДМИН-ПАНЕЛЬ</b>\n"
         "━━━━━━━━━━━━━━━━━━━\n\n"
         "Выберите действие:",
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 
@@ -269,10 +269,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         }
         
         await update.message.reply_text(
-            f"📦 Товар: *{product['name']}*\n"
-            f"📊 В системе: *{product['quantity']} шт.*\n\n"
+            f"📦 Товар: <b>{product['name']}</b>\n"
+            f"📊 В системе: <b>{product['quantity']} шт.</b>\n\n"
             f"Введите фактическое количество:",
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -288,7 +288,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             if diff == 0:
                 text_result = (
-                    f"✅ *Расхождений нет!*\n\n"
+                    f"✅ <b>Расхождений нет!</b>\n\n"
                     f"📦 {product_name}\n"
                     f"📊 В системе: {system_qty} шт.\n"
                     f"📝 Фактически: {actual} шт."
@@ -296,15 +296,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             else:
                 diff_text = f"+{diff}" if diff > 0 else str(diff)
                 text_result = (
-                    f"⚠️ *Обнаружено расхождение!*\n\n"
+                    f"⚠️ <b>Обнаружено расхождение!</b>\n\n"
                     f"📦 {product_name}\n"
                     f"📊 В системе: {system_qty} шт.\n"
                     f"📝 Фактически: {actual} шт.\n"
-                    f"📉 Расхождение: *{diff_text} шт.*\n\n"
-                    f"_Изменения не применены._"
+                    f"📉 Расхождение: <b>{diff_text} шт.</b>\n\n"
+                    f"<i>Изменения не применены.</i>"
                 )
             
-            await update.message.reply_text(text_result, parse_mode='Markdown')
+            await update.message.reply_text(text_result, parse_mode='HTML')
             user_states.pop(user_id, None)
         except ValueError:
             await update.message.reply_text("❌ Введите число.")
@@ -317,8 +317,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             'name': text
         }
         await update.message.reply_text(
-            f"✅ Название: *{text}*\n\nВведите цену товара (₽):",
-            parse_mode='Markdown'
+            f"✅ Название: <b>{text}</b>\n\nВведите цену товара (₽):",
+            parse_mode='HTML'
         )
         return
     
@@ -330,8 +330,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_states[user_id]['state'] = 'add_new_wait_quantity'
             
             await update.message.reply_text(
-                f"✅ Цена: *{price:.2f} ₽*\n\nВведите количество:",
-                parse_mode='Markdown'
+                f"✅ Цена: <b>{price:.2f} ₽</b>\n\nВведите количество:",
+                parse_mode='HTML'
             )
         except ValueError:
             await update.message.reply_text("❌ Введите число.")
@@ -350,11 +350,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 add_movement(employee_name, name, quantity, 'Приход', price * quantity)
                 
                 await update.message.reply_text(
-                    f"✅ *Товар добавлен!*\n\n"
+                    f"✅ <b>Товар добавлен!</b>\n\n"
                     f"📦 {name}\n"
                     f"💰 {price:.2f} ₽\n"
                     f"📊 {quantity} шт.",
-                    parse_mode='Markdown'
+                    parse_mode='HTML'
                 )
             else:
                 await update.message.reply_text("❌ Ошибка добавления.")
@@ -376,11 +376,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             add_movement(employee_name, name, quantity, 'Приход', price * quantity)
             
             await update.message.reply_text(
-                f"✅ *Приход оформлен!*\n\n"
+                f"✅ <b>Приход оформлен!</b>\n\n"
                 f"📦 {name}\n"
                 f"➕ +{quantity} шт.\n"
                 f"📊 Теперь: {new_qty} шт.",
-                parse_mode='Markdown'
+                parse_mode='HTML'
             )
             
             user_states.pop(user_id, None)
@@ -402,8 +402,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_states[user_id]['sell_quantity'] = quantity
             
             await update.message.reply_text(
-                f"✅ Количество: *{quantity} шт.*\n\nВведите клиента (username или ID):",
-                parse_mode='Markdown'
+                f"✅ Количество: <b>{quantity} шт.</b>\n\nВведите клиента (username или ID):",
+                parse_mode='HTML'
             )
         except ValueError:
             await update.message.reply_text("❌ Введите число.")
@@ -430,9 +430,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         
         await update.message.reply_text(
-            f"✅ Клиент: *{client_display}*\n\nВыберите способ оплаты:",
+            f"✅ Клиент: <b>{client_display}</b>\n\nВыберите способ оплаты:",
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -472,12 +472,12 @@ async def finalize_sale(update_or_query, context, user_id, comment=''):
     user_states.pop(user_id, None)
     
     result_text = (
-        f"✅ *ПРОДАЖА ОФОРМЛЕНА!*\n"
+        f"✅ <b>ПРОДАЖА ОФОРМЛЕНА!</b>\n"
         f"━━━━━━━━━━━━━━━━━━━\n\n"
-        f"📦 Товар: *{name}*\n"
-        f"🔢 Количество: *{quantity} шт.*\n"
-        f"💰 Цена: *{price:.2f} ₽*\n"
-        f"💵 Сумма: *{total:.2f} ₽*\n"
+        f"📦 Товар: <b>{name}</b>\n"
+        f"🔢 Количество: <b>{quantity} шт.</b>\n"
+        f"💰 Цена: <b>{price:.2f} ₽</b>\n"
+        f"💵 Сумма: <b>{total:.2f} ₽</b>\n"
         f"👤 Клиент: {client}\n"
         f"💳 Оплата: {payment}\n"
     )
@@ -485,12 +485,12 @@ async def finalize_sale(update_or_query, context, user_id, comment=''):
     if comment:
         result_text += f"📝 Комментарий: {comment}\n"
     
-    result_text += f"\n📊 Остаток: *{new_qty} шт.*"
+    result_text += f"\n📊 Остаток: <b>{new_qty} шт.</b>"
     
     if hasattr(update_or_query, 'message'):
-        await update_or_query.message.reply_text(result_text, parse_mode='Markdown')
+        await update_or_query.message.reply_text(result_text, parse_mode='HTML')
     else:
-        await update_or_query.edit_message_text(result_text, parse_mode='Markdown')
+        await update_or_query.edit_message_text(result_text, parse_mode='HTML')
 
 
 # ============================================
@@ -517,8 +517,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "add_new":
         user_states[user_id] = {'state': 'add_wait_name'}
         await query.edit_message_text(
-            "➕ *НОВЫЙ ТОВАР*\n\nВведите название товара:",
-            parse_mode='Markdown'
+            "➕ <b>НОВЫЙ ТОВАР</b>\n\nВведите название товара:",
+            parse_mode='HTML'
         )
         return
     
@@ -539,11 +539,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         }
         
         await query.edit_message_text(
-            f"📦 Товар: *{product['name']}*\n"
+            f"📦 Товар: <b>{product['name']}</b>\n"
             f"💰 Цена: {product['price']:.2f} ₽\n"
             f"📊 Сейчас: {product['quantity']} шт.\n\n"
             f"Введите количество для прихода:",
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -565,11 +565,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         }
         
         await query.edit_message_text(
-            f"📦 Товар: *{product['name']}*\n"
+            f"📦 Товар: <b>{product['name']}</b>\n"
             f"💰 Цена: {product['price']:.2f} ₽\n"
             f"📊 На складе: {product['quantity']} шт.\n\n"
             f"Введите количество:",
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -581,9 +581,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard = [[InlineKeyboardButton("⏭️ Пропустить", callback_data="skip_comment")]]
         
         await query.edit_message_text(
-            "✅ Оплата: *Наличные*\n\nВведите комментарий (или пропустите):",
+            "✅ Оплата: <b>Наличные</b>\n\nВведите комментарий (или пропустите):",
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -594,9 +594,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard = [[InlineKeyboardButton("⏭️ Пропустить", callback_data="skip_comment")]]
         
         await query.edit_message_text(
-            "✅ Оплата: *Карта*\n\nВведите комментарий (или пропустите):",
+            "✅ Оплата: <b>Карта</b>\n\nВведите комментарий (или пропустите):",
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
     
@@ -607,22 +607,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ОТЧЁТЫ
     if data == "report_stock":
         report = get_report_stock()
-        await query.edit_message_text(report, parse_mode='Markdown')
+        await query.edit_message_text(report, parse_mode='HTML')
         return
     
     if data == "report_today":
         report = get_report_sales_today()
-        await query.edit_message_text(report, parse_mode='Markdown')
+        await query.edit_message_text(report, parse_mode='HTML')
         return
     
     if data == "report_employees":
         report = get_report_by_employee()
-        await query.edit_message_text(report, parse_mode='Markdown')
+        await query.edit_message_text(report, parse_mode='HTML')
         return
     
     if data == "report_revenue":
         report = get_report_revenue()
-        await query.edit_message_text(report, parse_mode='Markdown')
+        await query.edit_message_text(report, parse_mode='HTML')
         return
     
     # АДМИН-ПАНЕЛЬ
@@ -631,14 +631,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text("⛔ Доступ только для владельца.")
             return
         
-        text = "👥 *СОТРУДНИКИ*\n━━━━━━━━━━━━━━━━━━━\n\n"
+        text = "👥 <b>СОТРУДНИКИ</b>\n━━━━━━━━━━━━━━━━━━━\n\n"
         for emp_id, info in EMPLOYEES.items():
             role_emoji = "👑" if info['role'] == 'owner' else "🛠️"
             text += f"{role_emoji} {info['username']}\n"
-            text += f"   ID: `{emp_id}`\n"
+            text += f"   ID: <code>{emp_id}</code>\n"
             text += f"   Роль: {info['name']}\n\n"
         
-        await query.edit_message_text(text, parse_mode='Markdown')
+        await query.edit_message_text(text, parse_mode='HTML')
         return
     
     if data == "admin_movements":
@@ -652,13 +652,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text("📭 История пуста.")
             return
         
-        text = "📊 *ПОСЛЕДНИЕ ДВИЖЕНИЯ*\n━━━━━━━━━━━━━━━━━━━\n\n"
+        text = "📊 <b>ПОСЛЕДНИЕ ДВИЖЕНИЯ</b>\n━━━━━━━━━━━━━━━━━━━\n\n"
         for m in reversed(movements):
             text += f"• {m['date']} | {m['type']}\n"
             text += f"  {m['product']} × {m['quantity']} = {m['total']} ₽\n"
             text += f"  👤 {m['employee']}\n\n"
         
-        await query.edit_message_text(text, parse_mode='Markdown')
+        await query.edit_message_text(text, parse_mode='HTML')
         return
 
 
