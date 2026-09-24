@@ -18,6 +18,7 @@ def get_bratsk_time():
 
 
 def get_client():
+    """Получить авторизованного клиента Google Sheets"""
     try:
         creds_json = os.getenv('GOOGLE_CREDENTIALS')
         
@@ -53,6 +54,16 @@ def get_movements_sheet():
 # 📦 ТОВАРЫ
 # ============================================
 def get_all_products():
+    """
+    Получить все товары со склада
+    
+    Структура:
+    A - №
+    B - Название
+    C - Цена
+    D - Количество
+    E - Сумма
+    """
     try:
         sheet = get_products_sheet()
         data = sheet.get_all_values()
@@ -97,6 +108,7 @@ def get_all_products():
 
 
 def get_product_by_name(name):
+    """Найти товар по названию"""
     products = get_all_products()
     for p in products:
         if p['name'].lower() == name.lower():
@@ -105,6 +117,7 @@ def get_product_by_name(name):
 
 
 def get_product_by_row(row):
+    """Найти товар по номеру строки"""
     products = get_all_products()
     for p in products:
         if p['row'] == row:
@@ -113,6 +126,7 @@ def get_product_by_row(row):
 
 
 def update_product_quantity(row, new_quantity):
+    """Обновить количество товара"""
     try:
         sheet = get_products_sheet()
         sheet.update_cell(row, 4, str(new_quantity))
@@ -123,6 +137,7 @@ def update_product_quantity(row, new_quantity):
 
 
 def add_product(name, price, quantity):
+    """Добавить новый товар"""
     try:
         sheet = get_products_sheet()
         data = sheet.get_all_values()
@@ -146,6 +161,7 @@ def add_product(name, price, quantity):
 
 
 def increase_product_quantity(row, amount):
+    """Увеличить количество товара"""
     try:
         sheet = get_products_sheet()
         current = sheet.cell(row, 4).value
@@ -163,6 +179,7 @@ def increase_product_quantity(row, amount):
 
 
 def decrease_product_quantity(row, amount):
+    """Уменьшить количество товара"""
     try:
         sheet = get_products_sheet()
         current = sheet.cell(row, 4).value
@@ -180,9 +197,10 @@ def decrease_product_quantity(row, amount):
 
 
 # ============================================
-# 📝 ДВИЖЕНИЯ
+# 📝 ДВИЖЕНИЯ (ИСТОРИЯ)
 # ============================================
 def add_movement(employee, product_name, quantity, movement_type, total, comment=''):
+    """Добавить запись в историю движений"""
     try:
         sheet = get_movements_sheet()
         now = get_bratsk_time()
@@ -205,6 +223,7 @@ def add_movement(employee, product_name, quantity, movement_type, total, comment
 
 
 def get_movements(limit=50):
+    """Получить последние движения"""
     try:
         sheet = get_movements_sheet()
         data = sheet.get_all_values()
@@ -232,15 +251,16 @@ def get_movements(limit=50):
 
 
 # ============================================
-# 📊 ОТЧЁТЫ
+# 📊 ОТЧЁТЫ (HTML)
 # ============================================
 def get_report_stock():
+    """Отчёт по остаткам"""
     products = get_all_products()
     
     if not products:
         return "📭 Склад пуст."
     
-    text = "📦 *ОСТАТКИ НА СКЛАДЕ*\n"
+    text = "📦 <b>ОСТАТКИ НА СКЛАДЕ</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n\n"
     
     total_sum = 0
@@ -248,18 +268,19 @@ def get_report_stock():
         item_sum = p['price'] * p['quantity']
         total_sum += item_sum
         text += (
-            f"• *{p['name']}*\n"
+            f"• <b>{p['name']}</b>\n"
             f"  💰 {p['price']:.2f} ₽ × {p['quantity']} шт. = {item_sum:.2f} ₽\n\n"
         )
     
     text += "━━━━━━━━━━━━━━━━━━━\n"
-    text += f"💰 *Общая сумма: {total_sum:.2f} ₽*\n"
-    text += f"📦 *Всего товаров: {len(products)}*"
+    text += f"💰 <b>Общая сумма: {total_sum:.2f} ₽</b>\n"
+    text += f"📦 <b>Всего товаров: {len(products)}</b>"
     
     return text
 
 
 def get_report_sales_today():
+    """Отчёт по продажам за сегодня"""
     movements = get_movements(1000)
     today = get_bratsk_time().strftime('%d.%m.%Y')
     
@@ -274,7 +295,7 @@ def get_report_sales_today():
     total = sum(float(m['total']) for m in today_sales)
     count = sum(int(m['quantity']) for m in today_sales)
     
-    text = f"📅 *ПРОДАЖИ ЗА {today}*\n"
+    text = f"📅 <b>ПРОДАЖИ ЗА {today}</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n\n"
     
     for m in today_sales:
@@ -282,13 +303,14 @@ def get_report_sales_today():
         text += f"  {m['product']} × {m['quantity']} = {m['total']} ₽\n\n"
     
     text += "━━━━━━━━━━━━━━━━━━━\n"
-    text += f"💰 *Выручка: {total:.2f} ₽*\n"
-    text += f"📦 *Продано: {count} шт.*"
+    text += f"💰 <b>Выручка: {total:.2f} ₽</b>\n"
+    text += f"📦 <b>Продано: {count} шт.</b>"
     
     return text
 
 
 def get_report_by_employee():
+    """Отчёт по сотрудникам"""
     movements = get_movements(1000)
     sales = [m for m in movements if m['type'] == 'Продажа']
     
@@ -303,12 +325,12 @@ def get_report_by_employee():
         by_employee[emp]['count'] += int(m['quantity'])
         by_employee[emp]['total'] += float(m['total'])
     
-    text = "👥 *ПРОДАЖИ ПО СОТРУДНИКАМ*\n"
+    text = "👥 <b>ПРОДАЖИ ПО СОТРУДНИКАМ</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n\n"
     
     for emp, data in sorted(by_employee.items(), key=lambda x: x[1]['total'], reverse=True):
         text += (
-            f"• *{emp}*\n"
+            f"• <b>{emp}</b>\n"
             f"  📦 Продано: {data['count']} шт.\n"
             f"  💰 Выручка: {data['total']:.2f} ₽\n\n"
         )
@@ -317,6 +339,7 @@ def get_report_by_employee():
 
 
 def get_report_revenue():
+    """Общая выручка"""
     movements = get_movements(1000)
     sales = [m for m in movements if m['type'] == 'Продажа']
     
@@ -326,10 +349,10 @@ def get_report_revenue():
     total = sum(float(m['total']) for m in sales)
     count = sum(int(m['quantity']) for m in sales)
     
-    text = "💰 *ОБЩАЯ ВЫРУЧКА*\n"
+    text = "💰 <b>ОБЩАЯ ВЫРУЧКА</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n\n"
-    text += f"📦 Продано: *{count} шт.*\n"
-    text += f"💰 Выручка: *{total:.2f} ₽*\n"
-    text += f"📊 Всего операций: *{len(sales)}*"
+    text += f"📦 Продано: <b>{count} шт.</b>\n"
+    text += f"💰 Выручка: <b>{total:.2f} ₽</b>\n"
+    text += f"📊 Всего операций: <b>{len(sales)}</b>"
     
     return text
